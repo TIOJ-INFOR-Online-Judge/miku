@@ -17,17 +17,16 @@
 bool enable_log;
 
 void usage() {
-  std::cout << "\
-Usage:\n\
-\n\
--v(, or --verbose) for extra verbosity\n\
--p(, or --parallel) [NUMBER] to have maxium [NUMBER] of parallel\n\
-processes to evaluate usercode. However this may cause verbosity\n\
-messages unreadable.\n\
--b [NUMBER] to set sandbox indexing offset. Need to be set to an\n\
-appropriate number if running multiple judgse on one computer.\n\
--a(, or --aggressive-update) add this to aggressivly update\n\
-verdict and result."
+  std::cout << R"(Usage:
+
+-v(, or --verbose) for extra verbosity
+-p(, or --parallel) [NUMBER] to have maxium [NUMBER] of parallel
+processes to evaluate usercode. However this may cause verbosity
+messages unreadable.
+-b [NUMBER] to set sandbox indexing offset. Need to be set to an
+appropriate number if running multiple judgse on one computer.
+-a(, or --aggressive-update) add this to aggressivly update
+verdict and result.)"
             << std::endl;
   exit(2);
 }

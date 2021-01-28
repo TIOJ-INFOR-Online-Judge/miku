@@ -1,7 +1,7 @@
-#ifndef CONFIGED
-#define CONFIGED
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
 // static int MAXPARNUM = 1;
 // static int BOXOFFSET = 10;
 
-#endif
+#endif  // CONFIG_H_

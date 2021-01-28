@@ -12,6 +12,8 @@
 #include <map>
 #include <regex>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "batchjudge.h"
 #include "config.h"
@@ -305,19 +307,19 @@ int compile(const submission& target, int boxid, int spBoxid) {
       compile_error_msg.read(cerr_msg_cstring, MAX_MSG_LENGTH + 1);
       std::string cerr_msg(cerr_msg_cstring);
       if (cerr_msg.size() > MAX_MSG_LENGTH) {
-        cerr_msg =
-            std::regex_replace(cerr_msg.substr(0, MAX_MSG_LENGTH),
-                               std::regex("(^|\\n)In file included "
-                                     "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
-                               "$1[Error messages from headers removed]$2");
+        cerr_msg = std::regex_replace(
+            cerr_msg.substr(0, MAX_MSG_LENGTH),
+            std::regex("(^|\\n)In file included "
+                       "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
+            "$1[Error messages from headers removed]$2");
         cerr_msg += "\n(Error message truncated after " +
                     std::to_string(MAX_MSG_LENGTH) + " Bytes.)";
       } else {
-        cerr_msg =
-            std::regex_replace(cerr_msg,
-                               std::regex("(^|\\n)In file included "
-                                     "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
-                               "$1[Error messages from headers removed]$2");
+        cerr_msg = std::regex_replace(
+            cerr_msg,
+            std::regex("(^|\\n)In file included "
+                       "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
+            "$1[Error messages from headers removed]$2");
       }
       sendMessage(target, cerr_msg);
     }

@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <string>
 
 struct Reply {
   uint16_t query_id;
@@ -34,8 +35,8 @@ static uint16_t query_id;
 
 inline int ReadReply(Reply& rep) {
   uint8_t header[8];
-  if (read(infd, (char*)header, 8) != 8) return -1;
-  rep.query_id = header[0] | (uint16_t)header[1] << 8;
+  if (read(infd, reinterpret_cast<char*>(header), 8) != 8) return -1;
+  rep.query_id = header[0] | static_cast<uint16_t>(header[1]) << 8;
   rep.status = header[2];
   uint32_t sz = header[7];
   sz = sz << 8 | header[6];
@@ -163,9 +164,9 @@ int downloadTestdata(submission& sub) {
   sub.tds.resize(tdcount);
   for (int i = 0; i < tdcount; ++i) {
     int testdata_id;
-    long long timestamp;
+    int64_t timestamp;
     ss >> testdata_id >> timestamp;
-    long long ts;
+    int64_t ts;
     std::string metafile = TdMeta(sub.problem_id, i);
     std::ifstream fin(metafile);
     bool flag = !(fin >> ts && ts == timestamp);

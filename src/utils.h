@@ -1,5 +1,5 @@
-#ifndef UTILS
-#define UTILS
+#ifndef UTILS_H_
+#define UTILS_H_
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 enum RESULTS { OK = 0, AC = 10, WA, TLE, MLE, OLE, RE, SIG, CE, CO, ER };
@@ -166,7 +167,6 @@ class fromVerdict {
   const int verdict;
 
  public:
-  explicit fromVerdict();
   explicit fromVerdict(int verdict) : verdict(verdict) {}
   const char* toStr() const {
     switch (verdict) {
@@ -226,8 +226,7 @@ class cast {
   const std::string val;
 
  public:
-  explicit cast();
-  cast(const std::string& c) : val(c) {}
+  explicit cast(const std::string& c) : val(c) {}
   template <typename T>
   T to() const {
     T res;
@@ -262,4 +261,4 @@ class submission {
       : problem_id(0), submission_id(0), submitter_id(0), problem_type(0) {}
 };
 
-#endif
+#endif  // UTILS_H_
