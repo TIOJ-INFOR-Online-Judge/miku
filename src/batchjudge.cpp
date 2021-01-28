@@ -1,5 +1,6 @@
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+
 #include "sandbox.h"
 #include "utils.h"
 
@@ -17,7 +18,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
     target = "main.out";
   }
 
-  //init box
+  // init box
   sandboxInit(boxid);
   string boxpath = BoxPath(boxid);
   string tdinput = TdInput(pid, td);
@@ -31,7 +32,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   ret = Execute("cp", BoxPath(testee) + target, boxpath + target);
   if (ret) return ret;
 
-  //set options
+  // set options
   sandboxOptions opt;
   opt.cgroup = true;
   opt.procs = 1;
@@ -49,7 +50,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
     opt.envs.push_back("PYTHONIOENCODING=utf-8");
   }
 
-  //invoke box command
+  // invoke box command
   if (lang == "python2") {
     sandboxExec(boxid, opt, {"/usr/bin/env", "python2.7", "main.pyc"});
   } else if (lang == "python3") {
@@ -59,4 +60,3 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   }
   return 0;
 }
-

@@ -1,11 +1,12 @@
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <functional>
-#include <sstream>
 #include <unistd.h>
+
+#include <algorithm>
+#include <cstdlib>
+#include <functional>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "server_io.h"
 #include "utils.h"
@@ -15,7 +16,7 @@ using namespace std;
 bool enable_log;
 
 int main(int argc, char *argv[]) {
-  if(argc < 2) return 0;
+  if (argc < 2) return 0;
   std::ios::sync_with_stdio(false);
   std::cerr << std::nounitbuf;
   int pid = cast(argv[1]).to<int>();
@@ -28,4 +29,3 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-

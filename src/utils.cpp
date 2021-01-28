@@ -22,7 +22,8 @@ std::string TdPath(int prob) {
   return kTestdataRoot + '/' + PadInt(prob, 4) + '/';
 }
 std::string TdMeta(int prob, int td) {
-  return kTestdataRoot + '/' + PadInt(prob, 4) + "/input" + PadInt(td, 3) + ".meta";
+  return kTestdataRoot + '/' + PadInt(prob, 4) + "/input" + PadInt(td, 3) +
+         ".meta";
 }
 std::string TdInput(int prob, int td) {
   return kTestdataRoot + '/' + PadInt(prob, 4) + "/input" + PadInt(td, 3);

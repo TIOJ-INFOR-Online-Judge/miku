@@ -1,12 +1,12 @@
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
+#include "server_io.h"
+
 #include <sys/select.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <fstream>
 #include <sstream>
-
-#include "server_io.h"
 
 struct Reply {
   uint16_t query_id;
@@ -46,7 +46,8 @@ inline int ReadReply(Reply& rep) {
   return 0;
 }
 
-inline uint16_t SendMsg(QueryType qu, const std::string& str, bool noreply = false) {
+inline uint16_t SendMsg(QueryType qu, const std::string& str,
+                        bool noreply = false) {
   uint8_t header[8];
   header[0] = static_cast<uint8_t>(qu);
   header[1] = noreply;
@@ -74,7 +75,8 @@ bool InitServerIO() {
   if (!py_pid) {
     dup2(pipefd[0][1], 1);
     dup2(pipefd[1][0], 0);
-    for (int i : {0, 1}) for (int j : {0, 1}) close(pipefd[i][j]);
+    for (int i : {0, 1})
+      for (int j : {0, 1}) close(pipefd[i][j]);
     execlp("server_io.py", "server_io.py", nullptr);
     exit(1);
   }
@@ -86,7 +88,8 @@ bool InitServerIO() {
   return rep.query_id == 0 && rep.status == 0 && rep.message.empty();
 }
 
-inline Reply SendCmd(QueryType qu, const std::string& str, bool noreply = false) {
+inline Reply SendCmd(QueryType qu, const std::string& str,
+                     bool noreply = false) {
   uint16_t id = SendMsg(qu, str, noreply);
   Reply rep;
   if (ReadReply(rep) != 0 || id != rep.query_id) {
@@ -151,7 +154,7 @@ int fetchSubmission(submission& sub) {
   return 0;
 }
 
-int downloadTestdata(submission &sub) {
+int downloadTestdata(submission& sub) {
   Reply rep = SendCmd(kFetchTestdataMeta, PadInt(sub.problem_id));
   if (rep.status) return -1;
   std::stringstream ss(rep.message);
@@ -171,7 +174,9 @@ int downloadTestdata(submission &sub) {
       // renew td
       Log("Renew testdata:", testdata_id, sub.problem_id, i);
       if (SendCmd(kFetchTestdata, PadInt(testdata_id) + '\0' +
-          PadInt(sub.problem_id) + '\0' + PadInt(i)).status) return -1;
+                                      PadInt(sub.problem_id) + '\0' + PadInt(i))
+              .status)
+        return -1;
       std::ofstream fout(metafile);
       fout << timestamp << '\n';
     }
@@ -179,17 +184,19 @@ int downloadTestdata(submission &sub) {
   return 0;
 }
 
-int fetchProblem(submission &sub) {
+int fetchProblem(submission& sub) {
   std::string pid = PadInt(sub.problem_id);
-  { // Get submission code
+  {  // Get submission code
     Reply rep = SendCmd(kFetchCode, PadInt(sub.submission_id));
     if (rep.status) return -1;
     rep.message.swap(sub.code);
-  } { // Get special judge code
+  }
+  {  // Get special judge code
     Reply rep = SendCmd(kFetchSjCode, pid);
     if (rep.status) return -1;
     rep.message.swap(sub.sjcode);
-  } { // Get Interactive lib
+  }
+  {  // Get Interactive lib
     Reply rep = SendCmd(kFetchInterlib, pid);
     if (rep.status) return -1;
     rep.message.swap(sub.interlib);
@@ -205,27 +212,29 @@ int fetchProblem(submission &sub) {
   return 0;
 }
 
-int sendResult(submission &sub, int verdict, bool done) {
+int sendResult(submission& sub, int verdict, bool done) {
   std::string result;
   if (verdict == CE) {
     result = "CE";
-  } else if(verdict == ER) {
+  } else if (verdict == ER) {
     result = "ER";
   } else {
     for (size_t i = 0; i < sub.tds.size(); ++i) {
       auto& nowtd = sub.tds[i];
-      result += fromVerdict(nowtd.verdict).toAbr() + '/' +
-          PadInt(nowtd.time) + '/' + PadInt(nowtd.mem) + '/';
+      result += fromVerdict(nowtd.verdict).toAbr() + '/' + PadInt(nowtd.time) +
+                '/' + PadInt(nowtd.mem) + '/';
       Log("td", i, ": time", nowtd.time, "mem", nowtd.mem, "verdict",
           fromVerdict(nowtd.verdict).toStr());
     }
   }
-  SendMsg(kUpdateVerdict, PadInt(sub.submission_id) + '\0' +
-      result + '\0' + (done ? "OK" : "NO"), true);
+  SendMsg(
+      kUpdateVerdict,
+      PadInt(sub.submission_id) + '\0' + result + '\0' + (done ? "OK" : "NO"),
+      true);
   return 0;
 }
 
-int sendMessage(const submission &sub, const std::string& message) {
+int sendMessage(const submission& sub, const std::string& message) {
   SendMsg(kUpdateMessage, PadInt(sub.submission_id) + '\0' + message, true);
   return 0;
 }

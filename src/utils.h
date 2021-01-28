@@ -2,45 +2,37 @@
 #define UTILS
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <ctime>
-#include <chrono>
-#include <string>
-#include <vector>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <type_traits>
+#include <unistd.h>
 
-enum RESULTS {
-  OK = 0,
-  AC = 10,
-  WA,
-  TLE,
-  MLE,
-  OLE,
-  RE,
-  SIG,
-  CE,
-  CO,
-  ER
-};
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <vector>
+
+enum RESULTS { OK = 0, AC = 10, WA, TLE, MLE, OLE, RE, SIG, CE, CO, ER };
 
 extern bool enable_log;
 
-template <class T> void LogNL(const T& str) {
+template <class T>
+void LogNL(const T& str) {
   if (enable_log) std::cerr << str;
 }
-template <class T> void LogNL(const std::vector<T>& vec) {
+template <class T>
+void LogNL(const std::vector<T>& vec) {
   if (enable_log && vec.size()) {
     std::cerr << vec[0];
     for (size_t i = 1; i < vec.size(); i++) std::cerr << ' ' << vec[i];
   }
 }
 
-template <class T, class... U> void LogNL(const T& str, U&&... tail) {
+template <class T, class... U>
+void LogNL(const T& str, U&&... tail) {
   if (enable_log) {
     LogNL(str);
     std::cerr << ' ';
@@ -48,13 +40,16 @@ template <class T, class... U> void LogNL(const T& str, U&&... tail) {
   }
 }
 
-template <class... T> void Log(T&&... param) {
+template <class... T>
+void Log(T&&... param) {
   static char buf[100];
   if (enable_log) {
     using namespace std::chrono;
     auto tnow = system_clock::now();
     time_t now = system_clock::to_time_t(tnow);
-    int milli = duration_cast<milliseconds>(tnow - time_point_cast<seconds>(tnow)).count();
+    int milli =
+        duration_cast<milliseconds>(tnow - time_point_cast<seconds>(tnow))
+            .count();
     strftime(buf, 100, "%F %T ", localtime(&now));
     std::cerr << buf << std::setfill('0') << std::setw(3) << milli << " -- ";
     LogNL(std::forward<T>(param)...);
@@ -83,7 +78,8 @@ inline void RedirFd(const std::string& in, const std::string& out,
     close(fd);
   }
 }
-template <class Func> int ExecHelper(Func f) {
+template <class Func>
+int ExecHelper(Func f) {
   int pid = fork();
   if (pid < 0) return -1;
   if (pid == 0) {
@@ -97,7 +93,7 @@ template <class Func> int ExecHelper(Func f) {
 }
 
 inline std::string RedirStr(const std::string& in, const std::string& out,
-    const std::string& err) {
+                            const std::string& err) {
   std::string redir;
   if (in.size()) redir += "<" + in;
   if (out.size()) redir += " >" + out;
@@ -113,8 +109,9 @@ inline void ExecuteList(const std::vector<std::string>& args) {
   execvp(args[0].c_str(), argvec.data());
 }
 
-template <class U, class... T> int ExecuteRedir(const std::string& in,
-    const std::string& out, const std::string& err, U&& first, T&&... args) {
+template <class U, class... T>
+int ExecuteRedir(const std::string& in, const std::string& out,
+                 const std::string& err, U&& first, T&&... args) {
   if (enable_log) {
     std::string redir;
     if (in.size()) redir += " <" + in;
@@ -122,31 +119,35 @@ template <class U, class... T> int ExecuteRedir(const std::string& in,
     if (err.size()) redir += " 2>" + err;
     Log("Execute command:", first, args..., redir);
   }
-  return ExecHelper([&](){
+  return ExecHelper([&]() {
     RedirFd(in, out, err);
     execlp(CStr(first), CStr(first), CStr(args)..., nullptr);
   });
 }
-template <class U, class... T> int Execute(U&& first, T&&... args) {
+template <class U, class... T>
+int Execute(U&& first, T&&... args) {
   Log("Execute command:", first, args...);
-  return ExecHelper([&](){
-    execlp(CStr(first), CStr(first), CStr(args)..., nullptr);
-  });
+  return ExecHelper(
+      [&]() { execlp(CStr(first), CStr(first), CStr(args)..., nullptr); });
 }
 
-template <class T> struct IsStringVec :
-    std::enable_if<std::is_same<typename std::decay<T>::type,
-                                std::vector<std::string>>::value>
-{};
+template <class T>
+struct IsStringVec
+    : std::enable_if<std::is_same<typename std::decay<T>::type,
+                                  std::vector<std::string>>::value> {};
 template <class T, class = IsStringVec<T>>
 int ExecuteRedir(const std::string& in, const std::string& out,
                  const std::string& err, T&& args) {
   if (enable_log) Log("Execute command:", args, RedirStr(in, out, err));
-  return ExecHelper([&](){ RedirFd(in, out, err); ExecuteList(args); });
+  return ExecHelper([&]() {
+    RedirFd(in, out, err);
+    ExecuteList(args);
+  });
 }
-template <class T, class = IsStringVec<T>> int Execute(T&& args) {
+template <class T, class = IsStringVec<T>>
+int Execute(T&& args) {
   Log("Execute command: ", args);
-  return ExecHelper([&](){ ExecuteList(args); });
+  return ExecHelper([&]() { ExecuteList(args); });
 }
 
 extern const std::string kBoxRoot;
@@ -161,13 +162,14 @@ std::string TdMeta(int prob, int td);
 std::string TdInput(int prob, int td);
 std::string TdOutput(int prob, int td);
 
-class fromVerdict{
+class fromVerdict {
   const int verdict;
+
  public:
   explicit fromVerdict();
   explicit fromVerdict(int verdict) : verdict(verdict) {}
   const char* toStr() const {
-    switch(verdict){
+    switch (verdict) {
       case AC:
         return "Accepted";
       case WA:
@@ -188,12 +190,12 @@ class fromVerdict{
         return "Compilation Timed Out";
       case ER:
         return "WTF!";
-                              default:
-                                      return "nil";
+      default:
+        return "nil";
     }
   }
   std::string toAbr() const {
-    switch(verdict){
+    switch (verdict) {
       case AC:
         return "AC";
       case WA:
@@ -222,10 +224,12 @@ class fromVerdict{
 
 class cast {
   const std::string val;
+
  public:
   explicit cast();
   cast(const std::string& c) : val(c) {}
-  template <typename T> T to() const {
+  template <typename T>
+  T to() const {
     T res;
     std::istringstream in(val);
     in >> res;
@@ -235,7 +239,7 @@ class cast {
 
 class submission {
  public:
-  //meta
+  // meta
   int problem_id;
   int submission_id;
   std::string code;
@@ -245,17 +249,17 @@ class submission {
   std::string std;
   std::string submitter;
   int submitter_id;
-  //problem
+  // problem
   int problem_type;
   std::string special_judge;
-  //test result
+  // test result
   struct Testdata {
     int mem_limit, time_limit, output_limit, verdict, mem, time;
   };
   std::vector<Testdata> tds;
 
-  submission() : problem_id(0), submission_id(0), submitter_id(0),
-      problem_type(0) {}
+  submission()
+      : problem_id(0), submission_id(0), submitter_id(0), problem_type(0) {}
 };
 
 #endif
