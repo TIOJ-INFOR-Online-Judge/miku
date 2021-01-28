@@ -1,5 +1,7 @@
-#ifndef SERVER_IO
-#define SERVER_IO
+#ifndef SERVER_IO_H_
+#define SERVER_IO_H_
+
+#include <string>
 
 #include "config.h"
 #include "utils.h"
@@ -18,4 +20,4 @@ int sendMessage(const submission&, const std::string&);
 
 void respondValidating(int submission_id);
 
-#endif
+#endif  // SERVER_IO_H_

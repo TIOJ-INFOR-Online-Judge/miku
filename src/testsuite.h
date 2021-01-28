@@ -1,5 +1,6 @@
-#ifndef TESTSUITE
-#define TESTSUITE
+#ifndef TESTSUITE_H_
+#define TESTSUITE_H_
+
 #include "utils.h"
 
 extern int MAXPARNUM;   // = 1;
@@ -8,4 +9,4 @@ extern bool AGGUPDATE;  // = false;
 
 int testsuite(submission&);
 
-#endif
+#endif  // TESTSUITE_H_

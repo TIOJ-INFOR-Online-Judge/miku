@@ -11,8 +11,6 @@
 #include "server_io.h"
 #include "utils.h"
 
-using namespace std;
-
 bool enable_log;
 
 int main(int argc, char *argv[]) {
@@ -23,7 +21,7 @@ int main(int argc, char *argv[]) {
   submission sub;
   sub.problem_id = pid;
 
-  string testdata_dir = TdPath(sub.problem_id);
+  std::string testdata_dir = TdPath(sub.problem_id);
   if (access(testdata_dir.c_str(), F_OK)) Execute("mkdir", "-p", testdata_dir);
   downloadTestdata(sub);
 

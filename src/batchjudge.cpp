@@ -4,14 +4,12 @@
 #include "sandbox.h"
 #include "utils.h"
 
-using namespace std;
-
 int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
-               string lang) {
-  ios::sync_with_stdio(false);
-  cerr << nounitbuf;
+               std::string lang) {
+  std::ios::sync_with_stdio(false);
+  std::cerr << std::nounitbuf;
 
-  string target;
+  std::string target;
   if (lang == "python2" || lang == "python3") {
     target = "main.pyc";
   } else {
@@ -20,10 +18,10 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
 
   // init box
   sandboxInit(boxid);
-  string boxpath = BoxPath(boxid);
-  string tdinput = TdInput(pid, td);
-  string boxinput = BoxInput(boxid);
-  string boxoutput = BoxOutput(boxid);
+  std::string boxpath = BoxPath(boxid);
+  std::string tdinput = TdInput(pid, td);
+  std::string boxinput = BoxInput(boxid);
+  std::string boxoutput = BoxOutput(boxid);
   int ret = Execute("cp", tdinput, boxinput);
   if (ret) return ret;
   chmod(boxpath.c_str(), 0755);
@@ -43,7 +41,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   opt.timeout = tl;
   opt.mem = ml;
   opt.fsize_limit = ol;
-  opt.envs.push_back(string("PATH=") + getenv("PATH"));
+  opt.envs.push_back(std::string("PATH=") + getenv("PATH"));
   opt.file_limit = 48;
   if (lang == "python2" || lang == "python3") {
     opt.envs.push_back("HOME=" + BoxPath(boxid));
