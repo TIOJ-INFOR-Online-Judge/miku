@@ -19,8 +19,6 @@
 #include "server_io.h"
 #include "utils.h"
 
-using namespace std;
-
 int compile(const submission& target, int boxid, int spBoxid);
 void eval(submission& sub, int td, int boxid, int spBoxid);
 void getExitStatus(submission& sub, int td);
@@ -46,7 +44,7 @@ int testsuite(submission& sub) {
   }
 
   // anyway, only have batch judge right now
-  map<pid_t, int> proc;
+  std::map<pid_t, int> proc;
   int procnum = 0;
   int problem_id = sub.problem_id;
 
@@ -115,14 +113,14 @@ int testsuite(submission& sub) {
 }
 
 void setExitStatus(submission& sub, int td) {
-  ifstream fin("./testzone/META" + PadInt(td));
-  string line;
-  map<string, string> META;
+  std::ifstream fin("./testzone/META" + PadInt(td));
+  std::string line;
+  std::map<std::string, std::string> META;
   while (!fin.eof() && getline(fin, line)) {
     for (size_t i = 0; i < line.size(); ++i)
       if (line[i] == ':') line[i] = ' ';
-    istringstream in(line);
-    string a, b;
+    std::istringstream in(line);
+    std::string a, b;
     in >> a >> b;
     META[a] = b;
   }
@@ -161,7 +159,7 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
   }
 
   if (sub.problem_type == 1) {
-    string cmd;
+    std::string cmd;
     {
       cmd += BoxPath(spBoxid) + "sj.out ";
       cmd += BoxPath(boxid) + "output ";
@@ -169,9 +167,9 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
       cmd += TdOutput(problem_id, td) + ' ';
       cmd += (sub.std.empty() ? sub.lang : sub.std) + ' ';
 
-      string codefile = BoxPath(boxid) + "code";
+      std::string codefile = BoxPath(boxid) + "code";
       cmd += codefile;
-      ofstream fout(codefile);
+      std::ofstream fout(codefile);
       fout.write(sub.code.c_str(), sub.code.size());
     }
 
@@ -187,7 +185,7 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
 
   int status = AC;
   // solution output
-  fstream tsol(TdOutput(problem_id, td));
+  std::fstream tsol(TdOutput(problem_id, td));
   // user output
   std::string output_file = BoxPath(boxid) + "output";
   {  // check if output is regular file
@@ -199,11 +197,11 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
     }
   }
 
-  fstream mout(output_file);
+  std::fstream mout(output_file);
   while (true) {
     if (tsol.eof() != mout.eof()) {
       while (tsol.eof() != mout.eof()) {
-        string s;
+        std::string s;
         if (tsol.eof()) {
           getline(mout, s);
         } else {
@@ -220,7 +218,7 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
     if (tsol.eof() && mout.eof()) {
       break;
     }
-    string s, t;
+    std::string s, t;
     getline(tsol, s);
     getline(mout, t);
     s.erase(s.find_last_not_of(" \n\r\t") + 1);
@@ -234,9 +232,9 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
 }
 
 int compile(const submission& target, int boxid, int spBoxid) {
-  string boxdir = BoxPath(boxid);
+  std::string boxdir = BoxPath(boxid);
 
-  ofstream fout;
+  std::ofstream fout;
   if (target.lang == "c++") {
     fout.open(boxdir + "main.cpp");
   } else if (target.lang == "c") {
@@ -294,7 +292,7 @@ int compile(const submission& target, int boxid, int spBoxid) {
   opt.fsize_limit = 32768;
 
   sandboxExec(boxid, opt, args);
-  string compiled_target;
+  std::string compiled_target;
   if (target.lang == "python2" || target.lang == "python3")
     compiled_target = "main.pyc";
   else
@@ -302,22 +300,24 @@ int compile(const submission& target, int boxid, int spBoxid) {
   if (access((boxdir + compiled_target).c_str(), F_OK) == -1) {
     if (access((boxdir + "compile_error").c_str(), F_OK) == 0) {
       const int MAX_MSG_LENGTH = 3000;
-      ifstream compile_error_msg((boxdir + "compile_error").c_str());
+      std::ifstream compile_error_msg((boxdir + "compile_error").c_str());
       char cerr_msg_cstring[MAX_MSG_LENGTH + 5] = "";
       compile_error_msg.read(cerr_msg_cstring, MAX_MSG_LENGTH + 1);
-      string cerr_msg(cerr_msg_cstring);
+      std::string cerr_msg(cerr_msg_cstring);
       if (cerr_msg.size() > MAX_MSG_LENGTH) {
-        cerr_msg = regex_replace(cerr_msg.substr(0, MAX_MSG_LENGTH),
-                                 regex("(^|\\n)In file included "
-                                       "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
-                                 "$1[Error messages from headers removed]$2");
+        cerr_msg =
+            std::regex_replace(cerr_msg.substr(0, MAX_MSG_LENGTH),
+                               std::regex("(^|\\n)In file included "
+                                     "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
+                               "$1[Error messages from headers removed]$2");
         cerr_msg += "\n(Error message truncated after " +
-                    to_string(MAX_MSG_LENGTH) + " Bytes.)";
+                    std::to_string(MAX_MSG_LENGTH) + " Bytes.)";
       } else {
-        cerr_msg = regex_replace(cerr_msg,
-                                 regex("(^|\\n)In file included "
-                                       "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
-                                 "$1[Error messages from headers removed]$2");
+        cerr_msg =
+            std::regex_replace(cerr_msg,
+                               std::regex("(^|\\n)In file included "
+                                     "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
+                               "$1[Error messages from headers removed]$2");
       }
       sendMessage(target, cerr_msg);
     }
@@ -325,7 +325,7 @@ int compile(const submission& target, int boxid, int spBoxid) {
   }
 
   if (target.problem_type == 1) {
-    string spBoxdir(BoxPath(spBoxid));
+    std::string spBoxdir(BoxPath(spBoxid));
 
     fout.open(spBoxdir + "sj.cpp");
     fout << target.sjcode;

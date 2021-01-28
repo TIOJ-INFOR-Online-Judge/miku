@@ -4,23 +4,21 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class sandboxOptions {
  public:
-  bool cgroup;          //--cg
-  bool preserve_env;    //--full-env
-  vector<string> dirs;  //--dir
-  string input;         //--stdin
-  string output;        //--stdout
-  string errout;        //--stderr
-  string meta;          //--meta
-  vector<string> envs;  //--env
-  int mem;              //--cg-mem in kilobytes
-  int procs;            //--processes
-  int timeout;          //--time in ms
-  int file_limit;       //--file-limit number of opened files
-  int fsize_limit;      //--fsize in kilobytes
+  bool cgroup;                    //--cg
+  bool preserve_env;              //--full-env
+  std::vector<std::string> dirs;  //--dir
+  std::string input;              //--stdin
+  std::string output;             //--stdout
+  std::string errout;             //--stderr
+  std::string meta;               //--meta
+  std::vector<std::string> envs;  //--env
+  int mem;                        //--cg-mem in kilobytes
+  int procs;                      //--processes
+  int timeout;                    //--time in ms
+  int file_limit;                 //--file-limit number of opened files
+  int fsize_limit;                //--fsize in kilobytes
   sandboxOptions()
       : cgroup(true),
         preserve_env(false),
@@ -33,7 +31,8 @@ class sandboxOptions {
 
 int sandboxInit(int boxid);
 
-int sandboxExec(int boxid, const sandboxOptions &, const std::vector<string> &);
+int sandboxExec(int boxid, const sandboxOptions &,
+                const std::vector<std::string> &);
 
 int sandboxDele(int boxid);
 

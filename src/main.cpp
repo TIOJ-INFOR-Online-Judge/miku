@@ -14,12 +14,10 @@
 #include "testsuite.h"
 #include "utils.h"
 
-using namespace std;
-
 bool enable_log;
 
 void usage() {
-  cout << "\
+  std::cout << "\
 Usage:\n\
 \n\
 -v(, or --verbose) for extra verbosity\n\
@@ -30,7 +28,7 @@ messages unreadable.\n\
 appropriate number if running multiple judgse on one computer.\n\
 -a(, or --aggressive-update) add this to aggressivly update\n\
 verdict and result."
-       << endl;
+            << std::endl;
   exit(2);
 }
 
@@ -71,7 +69,7 @@ int main(int argc, char *argv[]) {
   // initialize done
 
   if (geteuid() != 0) {
-    cerr << "Must be started as root !" << endl;
+    std::cerr << "Must be started as root !" << std::endl;
     return 1;
   }
 
