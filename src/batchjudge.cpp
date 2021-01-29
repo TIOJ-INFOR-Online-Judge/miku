@@ -1,3 +1,5 @@
+#include "batchjudge.h"
+
 #include <algorithm>
 #include <iostream>
 
@@ -17,7 +19,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   }
 
   // init box
-  sandboxInit(boxid);
+  SandboxInit(boxid);
   std::string boxpath = BoxPath(boxid);
   std::string tdinput = TdInput(pid, td);
   std::string boxinput = BoxInput(boxid);
@@ -31,7 +33,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   if (ret) return ret;
 
   // set options
-  sandboxOptions opt;
+  SandboxOptions opt;
   opt.cgroup = true;
   opt.procs = 1;
   opt.input = "input";
@@ -46,9 +48,9 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   if (lang.find_first_of("python") == 0) {
     opt.envs.push_back("HOME=" + BoxPath(boxid));
     opt.envs.push_back("PYTHONIOENCODING=utf-8");
-    sandboxExec(boxid, opt, {"/usr/bin/env", std::move(lang), "main.pyc"});
+    SandboxExec(boxid, opt, {"/usr/bin/env", std::move(lang), "main.pyc"});
   } else {
-    sandboxExec(boxid, opt, {"main.out"});
+    SandboxExec(boxid, opt, {target});
   }
   return 0;
 }

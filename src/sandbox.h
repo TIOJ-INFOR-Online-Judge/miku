@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-class sandboxOptions {
+class SandboxOptions {
  public:
   bool cgroup;                    // --cg
   bool preserve_env;              // --full-env
@@ -19,7 +19,7 @@ class sandboxOptions {
   int timeout;                    // --time in ms
   int file_limit;                 // --file-limit number of opened files
   int fsize_limit;                // --fsize in kilobytes
-  sandboxOptions()
+  SandboxOptions()
       : cgroup(true),
         preserve_env(false),
         mem(0),
@@ -29,11 +29,11 @@ class sandboxOptions {
         fsize_limit(0) {}
 };
 
-int sandboxInit(int boxid);
+int SandboxInit(int boxid);
 
-int sandboxExec(int boxid, const sandboxOptions &,
+int SandboxExec(int boxid, const SandboxOptions &,
                 const std::vector<std::string> &);
 
-int sandboxDele(int boxid);
+int SandboxDele(int boxid);
 
 #endif  // SANDBOX_H_

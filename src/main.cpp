@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
         verbose = true;
         break;
       case 'p':
-        MAXPARNUM = cast(optarg).to<int>();
+        MAXPARNUM = std::atoi(optarg);
         break;
       case 'b':
-        BOXOFFSET = cast(optarg).to<int>();
+        BOXOFFSET = std::atoi(optarg);
         break;
       case 'a':
         AGGUPDATE = true;
@@ -78,8 +78,8 @@ int main(int argc, char *argv[]) {
   }
 
   while (true) {
-    submission sub;
-    int status = fetchSubmission(sub);
+    Submission sub;
+    int status = FetchSubmission(sub);
     if (status != 0) {
       if (status == -2) {
         Log("[ERROR] Unable to connect to TIOJ url");
@@ -88,15 +88,15 @@ int main(int argc, char *argv[]) {
       continue;
     }
     Log("Recieved submission [", sub.submission_id, "]");
-    respondValidating(sub.submission_id);
-    if (fetchProblem(sub) == -1) {
+    RespondValidating(sub.submission_id);
+    if (FetchProblem(sub) == -1) {
       usleep(1000000);
       Log("[ERROR] Unable to fetch problem meta");
       continue;
     }
 
-    int verdict = testsuite(sub);
-    sendResult(sub, verdict, true);
+    Results verdict = Testsuite(sub);
+    SendResult(sub, verdict, true);
   }
 
   return 0;

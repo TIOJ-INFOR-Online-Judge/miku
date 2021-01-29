@@ -9,7 +9,7 @@
 
 #include "utils.h"
 
-int sandboxExec(int boxid, const sandboxOptions& opt,
+int SandboxExec(int boxid, const SandboxOptions& opt,
                 const std::vector<std::string>& comm) {
   std::vector<std::string> args{"isolate", "--box-id=" + PadInt(boxid)};
   if (opt.cgroup) args.emplace_back("--cg");
@@ -27,7 +27,7 @@ int sandboxExec(int boxid, const sandboxOptions& opt,
   if (!opt.meta.empty()) args.emplace_back("--meta=" + opt.meta);
   if (opt.mem != 0) args.emplace_back("--mem=" + PadInt(opt.mem));
   args.emplace_back("--processes=" + PadInt(opt.procs));
-  auto TimeStr = [](long x) {
+  auto TimeStr = [](int64_t x) {
     return PadInt(x / 1000) + '.' + PadInt(x % 1000, 3);
   };
   if (opt.timeout != 0) {
@@ -45,14 +45,14 @@ int sandboxExec(int boxid, const sandboxOptions& opt,
   return 0;
 }
 
-int sandboxInit(int boxid) {
+int SandboxInit(int boxid) {
   Log("[debug] box-", boxid, "start init");
   ExecuteRedir("", "/dev/null", "/dev/null", "isolate",
                "--box-id=" + PadInt(boxid), "--cg", "--init");
   return 0;
 }
 
-int sandboxDele(int boxid) {
+int SandboxDele(int boxid) {
   Log("[debug] box-", boxid, "start clean");
   ExecuteRedir("", "/dev/null", "/dev/null", "isolate",
                "--box-id=" + PadInt(boxid), "--cg", "--cleanup");
