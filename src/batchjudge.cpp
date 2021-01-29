@@ -1,3 +1,5 @@
+#include "batchjudge.h"
+
 #include <algorithm>
 #include <iostream>
 

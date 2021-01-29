@@ -27,7 +27,7 @@ int SandboxExec(int boxid, const SandboxOptions& opt,
   if (!opt.meta.empty()) args.emplace_back("--meta=" + opt.meta);
   if (opt.mem != 0) args.emplace_back("--mem=" + PadInt(opt.mem));
   args.emplace_back("--processes=" + PadInt(opt.procs));
-  auto TimeStr = [](long x) {
+  auto TimeStr = [](int64_t x) {
     return PadInt(x / 1000) + '.' + PadInt(x % 1000, 3);
   };
   if (opt.timeout != 0) {
