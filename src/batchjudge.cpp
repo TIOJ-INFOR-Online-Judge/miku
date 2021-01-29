@@ -12,7 +12,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   cerr << nounitbuf;
 
   string target;
-  if (lang == "python2" || lang == "python3") {
+  if (lang.find_first_of("python") == 0) {
     target = "main.pyc";
   } else {
     target = "main.out";
@@ -45,16 +45,10 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   opt.fsize_limit = ol;
   opt.envs.push_back(string("PATH=") + getenv("PATH"));
   opt.file_limit = 48;
-  if (lang == "python2" || lang == "python3") {
+  if (lang.find_first_of("python") == 0) {
     opt.envs.push_back("HOME=" + BoxPath(boxid));
     opt.envs.push_back("PYTHONIOENCODING=utf-8");
-  }
-
-  // invoke box command
-  if (lang == "python2") {
-    sandboxExec(boxid, opt, {"/usr/bin/env", "python2", "main.pyc"});
-  } else if (lang == "python3") {
-    sandboxExec(boxid, opt, {"/usr/bin/env", "python3", "main.pyc"});
+    sandboxExec(boxid, opt, {"/usr/bin/env", std::move(lang), "main.pyc"});
   } else {
     sandboxExec(boxid, opt, {"main.out"});
   }
