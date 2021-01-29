@@ -9,7 +9,7 @@
 
 #include "utils.h"
 
-int sandboxExec(int boxid, const sandboxOptions& opt,
+int sandboxExec(int boxid, const SandboxOptions& opt,
                 const std::vector<std::string>& comm) {
   std::vector<std::string> args{"isolate", "--box-id=" + PadInt(boxid)};
   if (opt.cgroup) args.emplace_back("--cg");

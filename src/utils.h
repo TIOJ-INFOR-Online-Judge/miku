@@ -160,80 +160,61 @@ std::string TdMeta(int prob, int td);
 std::string TdInput(int prob, int td);
 std::string TdOutput(int prob, int td);
 
-class fromVerdict {
-  const int verdict;
-
- public:
-  explicit fromVerdict(int verdict) : verdict(verdict) {}
-  const char* toStr() const {
-    switch (verdict) {
-      case AC:
-        return "Accepted";
-      case WA:
-        return "Wrong Answer";
-      case TLE:
-        return "Time Limit Exceeded";
-      case MLE:
-        return "Segmentation Fault";
-      case OLE:
-        return "Output Limit Exceeded";
-      case RE:
-        return "Runtime Error (exited with nonzero status)";
-      case SIG:
-        return "Runtime Error (exited with signal)";
-      case CE:
-        return "Compile Error";
-      case CO:
-        return "Compilation Timed Out";
-      case ER:
-        return "WTF!";
-      default:
-        return "nil";
-    }
+inline const char* VerdictToStr(int verdict) {
+  switch (verdict) {
+    case AC:
+      return "Accepted";
+    case WA:
+      return "Wrong Answer";
+    case TLE:
+      return "Time Limit Exceeded";
+    case MLE:
+      return "Segmentation Fault";
+    case OLE:
+      return "Output Limit Exceeded";
+    case RE:
+      return "Runtime Error (exited with nonzero status)";
+    case SIG:
+      return "Runtime Error (exited with signal)";
+    case CE:
+      return "Compile Error";
+    case CO:
+      return "Compilation Timed Out";
+    case ER:
+      return "WTF!";
+    default:
+      return "nil";
   }
-  std::string toAbr() const {
-    switch (verdict) {
-      case AC:
-        return "AC";
-      case WA:
-        return "WA";
-      case TLE:
-        return "TLE";
-      case MLE:
-        return "MLE";
-      case OLE:
-        return "OLE";
-      case RE:
-        return "RE";
-      case SIG:
-        return "SIG";
-      case CE:
-        return "CE";
-      case CO:
-        return "CO";
-      case ER:
-        return "ER";
-      default:
-        return "";
-    }
+}
+
+inline const char* VerdictToAbr(int verdict) {
+  switch (verdict) {
+    case AC:
+      return "AC";
+    case WA:
+      return "WA";
+    case TLE:
+      return "TLE";
+    case MLE:
+      return "MLE";
+    case OLE:
+      return "OLE";
+    case RE:
+      return "RE";
+    case SIG:
+      return "SIG";
+    case CE:
+      return "CE";
+    case CO:
+      return "CO";
+    case ER:
+      return "ER";
+    default:
+      return "";
   }
-};
+}
 
-class cast {
-  const std::string val;
-
- public:
-  explicit cast(const std::string& c) : val(c) {}
-  template <typename T>
-  T to() const {
-    T res;
-    std::istringstream in(val);
-    in >> res;
-    return res;
-  }
-};
-
-class submission {
+class Submission {
  public:
   // meta
   int problem_id;
@@ -254,7 +235,7 @@ class submission {
   };
   std::vector<Testdata> tds;
 
-  submission()
+  Submission()
       : problem_id(0), submission_id(0), submitter_id(0), problem_type(0) {}
 };
 

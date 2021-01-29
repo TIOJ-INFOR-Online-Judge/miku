@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
         verbose = true;
         break;
       case 'p':
-        MAXPARNUM = cast(optarg).to<int>();
+        MAXPARNUM = std::atoi(optarg);
         break;
       case 'b':
-        BOXOFFSET = cast(optarg).to<int>();
+        BOXOFFSET = std::atoi(optarg);
         break;
       case 'a':
         AGGUPDATE = true;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
   }
 
   while (true) {
-    submission sub;
+    Submission sub;
     int status = fetchSubmission(sub);
     if (status != 0) {
       if (status == -2) {

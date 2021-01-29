@@ -21,15 +21,15 @@
 #include "server_io.h"
 #include "utils.h"
 
-int compile(const submission& target, int boxid, int spBoxid);
-void eval(submission& sub, int td, int boxid, int spBoxid);
-void getExitStatus(submission& sub, int td);
+int compile(const Submission& target, int boxid, int spBoxid);
+void eval(Submission& sub, int td, int boxid, int spBoxid);
+void getExitStatus(Submission& sub, int td);
 
 int MAXPARNUM = 1;
 int BOXOFFSET = 10;
 bool AGGUPDATE = false;
 
-int testsuite(submission& sub) {
+int testsuite(Submission& sub) {
   Execute("rm", "-f", "./testzone/*");
   const int testBoxid = BOXOFFSET + 0, spBoxid = BOXOFFSET + 1;
   auto DelSandboxes = [&]() {
@@ -114,7 +114,7 @@ int testsuite(submission& sub) {
   return OK;
 }
 
-void setExitStatus(submission& sub, int td) {
+void setExitStatus(Submission& sub, int td) {
   std::ifstream fin("./testzone/META" + PadInt(td));
   std::string line;
   std::map<std::string, std::string> META;
@@ -129,16 +129,16 @@ void setExitStatus(submission& sub, int td) {
 
   auto& nowtd = sub.tds[td];
   // mem_used
-  nowtd.mem = cast(META["max-rss"]).to<int>();
+  nowtd.mem = std::atoi(META["max-rss"].c_str());
   // time_used
-  nowtd.time = 1000 * cast(META["time"]).to<double>();
+  nowtd.time = 1000 * std::atof(META["time"].c_str());
   // verdict
   if (META["status"] == "") {
     nowtd.verdict = OK;
   } else if (META["status"] == "TO") {
     nowtd.verdict = TLE;
   } else if (META["status"] == "SG") {
-    switch (cast(META["exitsig"]).to<int>()) {
+    switch (std::atoi(META["exitsig"].c_str())) {
       case 11:
         nowtd.verdict = MLE;
         break;
@@ -152,7 +152,7 @@ void setExitStatus(submission& sub, int td) {
   }
 }
 
-void eval(submission& sub, int td, int boxid, int spBoxid) {
+void eval(Submission& sub, int td, int boxid, int spBoxid) {
   auto& nowtd = sub.tds[td];
   int problem_id = sub.problem_id;
   setExitStatus(sub, td);
@@ -233,7 +233,7 @@ void eval(submission& sub, int td, int boxid, int spBoxid) {
   nowtd.verdict = status;
 }
 
-int compile(const submission& target, int boxid, int spBoxid) {
+int compile(const Submission& target, int boxid, int spBoxid) {
   std::string boxdir = BoxPath(boxid);
 
   std::ofstream fout;
@@ -276,13 +276,13 @@ int compile(const submission& target, int boxid, int spBoxid) {
     args = {"/usr/bin/env", "python2.7", "-m", "py_compile", "main.py"};
   } else if (target.lang == "python3") {
     args = {"/usr/bin/env", "python3.7", "-c",
-            "import py_compile;py_compile.compile(\'main.py\',\'main.pyc\')"};
+            R"(import py_compile;py_compile.compile('main.py','main.pyc'))"};
   }
   if (!target.std.empty() && target.std != "c90") {
     args.push_back("-std=" + target.std);
   }
 
-  sandboxOptions opt;
+  SandboxOptions opt;
   opt.dirs.push_back("/etc/alternatives");
   if (target.lang == "haskell") opt.dirs.push_back("/var");
   opt.procs = 50;

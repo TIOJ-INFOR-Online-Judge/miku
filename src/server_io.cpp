@@ -104,7 +104,7 @@ void respondValidating(int sid) {
   SendMsg(kRespondValidating, PadInt(sid), true);
 }
 
-int fetchSubmission(submission& sub) {
+int fetchSubmission(Submission& sub) {
   Reply rep = SendCmd(kFetchSubmission, "");
   std::stringstream ss(rep.message);
   ss >> sub.submission_id;
@@ -155,7 +155,7 @@ int fetchSubmission(submission& sub) {
   return 0;
 }
 
-int downloadTestdata(submission& sub) {
+int downloadTestdata(Submission& sub) {
   Reply rep = SendCmd(kFetchTestdataMeta, PadInt(sub.problem_id));
   if (rep.status) return -1;
   std::stringstream ss(rep.message);
@@ -185,7 +185,7 @@ int downloadTestdata(submission& sub) {
   return 0;
 }
 
-int fetchProblem(submission& sub) {
+int fetchProblem(Submission& sub) {
   std::string pid = PadInt(sub.problem_id);
   {  // Get submission code
     Reply rep = SendCmd(kFetchCode, PadInt(sub.submission_id));
@@ -213,7 +213,7 @@ int fetchProblem(submission& sub) {
   return 0;
 }
 
-int sendResult(submission& sub, int verdict, bool done) {
+int sendResult(Submission& sub, int verdict, bool done) {
   std::string result;
   if (verdict == CE) {
     result = "CE";
@@ -222,10 +222,10 @@ int sendResult(submission& sub, int verdict, bool done) {
   } else {
     for (size_t i = 0; i < sub.tds.size(); ++i) {
       auto& nowtd = sub.tds[i];
-      result += fromVerdict(nowtd.verdict).toAbr() + '/' + PadInt(nowtd.time) +
-                '/' + PadInt(nowtd.mem) + '/';
+      result += std::string(VerdictToAbr(nowtd.verdict)) + '/' +
+                PadInt(nowtd.time) + '/' + PadInt(nowtd.mem) + '/';
       Log("td", i, ": time", nowtd.time, "mem", nowtd.mem, "verdict",
-          fromVerdict(nowtd.verdict).toStr());
+          VerdictToStr(nowtd.verdict));
     }
   }
   SendMsg(
@@ -235,7 +235,7 @@ int sendResult(submission& sub, int verdict, bool done) {
   return 0;
 }
 
-int sendMessage(const submission& sub, const std::string& message) {
+int sendMessage(const Submission& sub, const std::string& message) {
   SendMsg(kUpdateMessage, PadInt(sub.submission_id) + '\0' + message, true);
   return 0;
 }
