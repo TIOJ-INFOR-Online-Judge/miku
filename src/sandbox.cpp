@@ -9,20 +9,18 @@
 
 #include "utils.h"
 
-using namespace std;
-
 int sandboxExec(int boxid, const sandboxOptions& opt,
-                const std::vector<string>& comm) {
+                const std::vector<std::string>& comm) {
   std::vector<std::string> args{"isolate", "--box-id=" + PadInt(boxid)};
   if (opt.cgroup) args.emplace_back("--cg");
   if (opt.preserve_env) {
     args.emplace_back("--full-env");
   } else {
-    for (const string& env : opt.envs) {
+    for (const auto& env : opt.envs) {
       args.emplace_back("--env=" + env);
     }
   }
-  for (const string& dir : opt.dirs) args.emplace_back("--dir=" + dir);
+  for (const auto& dir : opt.dirs) args.emplace_back("--dir=" + dir);
   if (!opt.input.empty()) args.emplace_back("--stdin=" + opt.input);
   if (!opt.output.empty()) args.emplace_back("--stdout=" + opt.output);
   if (!opt.errout.empty()) args.emplace_back("--stderr=" + opt.errout);
@@ -41,7 +39,7 @@ int sandboxExec(int boxid, const sandboxOptions& opt,
   args.emplace_back("--extra-time=0.2");
   args.emplace_back("--run");
   args.emplace_back("--");
-  for (const std::string& str : comm) args.emplace_back(str);
+  for (const auto& str : comm) args.emplace_back(str);
   Log("[debug] box-", boxid, "start exec");
   Execute(args);
   return 0;

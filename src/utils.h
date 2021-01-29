@@ -1,5 +1,5 @@
-#ifndef UTILS
-#define UTILS
+#ifndef UTILS_H_
+#define UTILS_H_
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 enum RESULTS { OK = 0, AC = 10, WA, TLE, MLE, OLE, RE, SIG, CE, CO, ER };
@@ -21,11 +22,11 @@ extern bool enable_log;
 
 template <class T>
 void LogNL(const T& str) {
-  if (enable_log) std::cerr << str;
+  std::cerr << str;
 }
 template <class T>
 void LogNL(const std::vector<T>& vec) {
-  if (enable_log && vec.size()) {
+  if (!vec.empty()) {
     std::cerr << vec[0];
     for (size_t i = 1; i < vec.size(); i++) std::cerr << ' ' << vec[i];
   }
@@ -33,28 +34,24 @@ void LogNL(const std::vector<T>& vec) {
 
 template <class T, class... U>
 void LogNL(const T& str, U&&... tail) {
-  if (enable_log) {
-    LogNL(str);
-    std::cerr << ' ';
-    LogNL(std::forward<U>(tail)...);
-  }
+  LogNL(str);
+  std::cerr << ' ';
+  LogNL(std::forward<U>(tail)...);
 }
 
 template <class... T>
 void Log(T&&... param) {
   static char buf[100];
-  if (enable_log) {
-    using namespace std::chrono;
-    auto tnow = system_clock::now();
-    time_t now = system_clock::to_time_t(tnow);
-    int milli =
-        duration_cast<milliseconds>(tnow - time_point_cast<seconds>(tnow))
-            .count();
-    strftime(buf, 100, "%F %T ", localtime(&now));
-    std::cerr << buf << std::setfill('0') << std::setw(3) << milli << " -- ";
-    LogNL(std::forward<T>(param)...);
-    std::cerr << std::endl;
-  }
+  if (!enable_log) return;
+  using namespace std::chrono;
+  auto tnow = system_clock::now();
+  time_t now = system_clock::to_time_t(tnow);
+  int milli = duration_cast<milliseconds>(tnow - time_point_cast<seconds>(tnow))
+                  .count();
+  strftime(buf, 100, "%F %T ", localtime(&now));
+  std::cerr << buf << std::setfill('0') << std::setw(3) << milli << " -- ";
+  LogNL(std::forward<T>(param)...);
+  std::cerr << std::endl;
 }
 
 inline const char* CStr(const char* x) { return x; }
@@ -133,12 +130,13 @@ int Execute(U&& first, T&&... args) {
 
 template <class T>
 struct IsStringVec
-    : std::enable_if<std::is_same<typename std::decay<T>::type,
-                                  std::vector<std::string>>::value> {};
+    : std::enable_if_t<
+          std::is_same_v<std::decay_t<T>, std::vector<std::string>>> {};
+
 template <class T, class = IsStringVec<T>>
 int ExecuteRedir(const std::string& in, const std::string& out,
                  const std::string& err, T&& args) {
-  if (enable_log) Log("Execute command:", args, RedirStr(in, out, err));
+  Log("Execute command:", args, RedirStr(in, out, err));
   return ExecHelper([&]() {
     RedirFd(in, out, err);
     ExecuteList(args);
@@ -166,7 +164,6 @@ class fromVerdict {
   const int verdict;
 
  public:
-  explicit fromVerdict();
   explicit fromVerdict(int verdict) : verdict(verdict) {}
   const char* toStr() const {
     switch (verdict) {
@@ -226,8 +223,7 @@ class cast {
   const std::string val;
 
  public:
-  explicit cast();
-  cast(const std::string& c) : val(c) {}
+  explicit cast(const std::string& c) : val(c) {}
   template <typename T>
   T to() const {
     T res;
@@ -262,4 +258,4 @@ class submission {
       : problem_id(0), submission_id(0), submitter_id(0), problem_type(0) {}
 };
 
-#endif
+#endif  // UTILS_H_
