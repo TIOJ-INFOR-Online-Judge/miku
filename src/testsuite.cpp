@@ -275,10 +275,8 @@ int Compile(const Submission& target, int boxid, int spBoxid) {
   } else if (target.lang == "python2") {
     args = {"/usr/bin/env", "python2", "-m", "py_compile", "main.py"};
   } else if (target.lang == "python3") {
-    args = {"/usr/bin/env", "python3.7", "-c",
-            R"(import py_compile;py_compile.compile('main.py','main.pyc'))"};
     args = {"/usr/bin/env", "python3", "-c",
-            "import py_compile;py_compile.compile(\'main.py\',\'main.pyc\')"};
+            R"(import py_compile;py_compile.compile('main.py','main.pyc'))"};
   }
   if (!target.std.empty() && target.std != "c90") {
     args.push_back("-std=" + target.std);
