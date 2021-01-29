@@ -213,7 +213,7 @@ int FetchProblem(Submission& sub) {
   return 0;
 }
 
-int SendResult(Submission& sub, int verdict, bool done) {
+int SendResult(Submission& sub, Results verdict, bool done) {
   std::string result;
   if (verdict == CE) {
     result = "CE";

@@ -14,7 +14,7 @@ int DownloadTestdata(Submission&);
 
 int FetchProblem(Submission&);
 
-int SendResult(Submission&, int verdict, bool done);
+int SendResult(Submission&, Results verdict, bool done);
 
 int SendMessage(const Submission&, const std::string&);
 

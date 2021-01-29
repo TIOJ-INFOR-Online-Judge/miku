@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    int verdict = Testsuite(sub);
+    Results verdict = Testsuite(sub);
     SendResult(sub, verdict, true);
   }
 

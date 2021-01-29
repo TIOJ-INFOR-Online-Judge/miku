@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-enum RESULTS { OK = 0, AC = 10, WA, TLE, MLE, OLE, RE, SIG, CE, CO, ER };
+enum Results { OK = 0, AC = 10, WA, TLE, MLE, OLE, RE, SIG, CE, CO, ER };
 
 extern bool enable_log;
 
@@ -160,7 +160,7 @@ std::string TdMeta(int prob, int td);
 std::string TdInput(int prob, int td);
 std::string TdOutput(int prob, int td);
 
-inline const char* VerdictToStr(int verdict) {
+inline const char* VerdictToStr(Results verdict) {
   switch (verdict) {
     case AC:
       return "Accepted";
@@ -187,7 +187,7 @@ inline const char* VerdictToStr(int verdict) {
   }
 }
 
-inline const char* VerdictToAbr(int verdict) {
+inline const char* VerdictToAbr(Results verdict) {
   switch (verdict) {
     case AC:
       return "AC";
@@ -231,7 +231,8 @@ class Submission {
   std::string special_judge;
   // test result
   struct Testdata {
-    int mem_limit, time_limit, output_limit, verdict, mem, time;
+    int mem_limit, time_limit, output_limit, mem, time;
+    Results verdict;
   };
   std::vector<Testdata> tds;
 

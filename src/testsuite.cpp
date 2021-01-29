@@ -21,7 +21,7 @@
 #include "server_io.h"
 #include "utils.h"
 
-int Compile(const Submission& target, int boxid, int spBoxid);
+Results Compile(const Submission& target, int boxid, int spBoxid);
 void Eval(Submission& sub, int td, int boxid, int spBoxid);
 void GetExitStatus(Submission& sub, int td);
 
@@ -29,7 +29,7 @@ int MAXPARNUM = 1;
 int BOXOFFSET = 10;
 bool AGGUPDATE = false;
 
-int Testsuite(Submission& sub) {
+Results Testsuite(Submission& sub) {
   Execute("rm", "-f", "./testzone/*");
   const int testBoxid = BOXOFFSET + 0, spBoxid = BOXOFFSET + 1;
   auto DelSandboxes = [&]() {
@@ -39,7 +39,7 @@ int Testsuite(Submission& sub) {
 
   SandboxInit(testBoxid);
   SandboxInit(spBoxid);
-  int status = Compile(sub, testBoxid, spBoxid);
+  Results status = Compile(sub, testBoxid, spBoxid);
   if (status != OK) {
     DelSandboxes();
     return status;
@@ -185,7 +185,7 @@ void Eval(Submission& sub, int td, int boxid, int spBoxid) {
     return;
   }
 
-  int status = AC;
+  Results status = AC;
   // solution output
   std::fstream tsol(TdOutput(problem_id, td));
   // user output
@@ -233,7 +233,7 @@ void Eval(Submission& sub, int td, int boxid, int spBoxid) {
   nowtd.verdict = status;
 }
 
-int Compile(const Submission& target, int boxid, int spBoxid) {
+Results Compile(const Submission& target, int boxid, int spBoxid) {
   std::string boxdir = BoxPath(boxid);
 
   std::ofstream fout;
