@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
   std::string testdata_dir = TdPath(sub.problem_id);
   if (access(testdata_dir.c_str(), F_OK)) Execute("mkdir", "-p", testdata_dir);
-  downloadTestdata(sub);
+  DownloadTestdata(sub);
 
   return 0;
 }

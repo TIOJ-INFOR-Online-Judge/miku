@@ -8,16 +8,16 @@
 
 bool InitServerIO();
 
-int fetchSubmission(Submission&);
+int FetchSubmission(Submission&);
 
-int downloadTestdata(Submission&);
+int DownloadTestdata(Submission&);
 
-int fetchProblem(Submission&);
+int FetchProblem(Submission&);
 
-int sendResult(Submission&, int verdict, bool done);
+int SendResult(Submission&, int verdict, bool done);
 
-int sendMessage(const Submission&, const std::string&);
+int SendMessage(const Submission&, const std::string&);
 
-void respondValidating(int submission_id);
+void RespondValidating(int submission_id);
 
 #endif  // SERVER_IO_H_

@@ -9,7 +9,7 @@
 
 #include "utils.h"
 
-int sandboxExec(int boxid, const SandboxOptions& opt,
+int SandboxExec(int boxid, const SandboxOptions& opt,
                 const std::vector<std::string>& comm) {
   std::vector<std::string> args{"isolate", "--box-id=" + PadInt(boxid)};
   if (opt.cgroup) args.emplace_back("--cg");
@@ -45,14 +45,14 @@ int sandboxExec(int boxid, const SandboxOptions& opt,
   return 0;
 }
 
-int sandboxInit(int boxid) {
+int SandboxInit(int boxid) {
   Log("[debug] box-", boxid, "start init");
   ExecuteRedir("", "/dev/null", "/dev/null", "isolate",
                "--box-id=" + PadInt(boxid), "--cg", "--init");
   return 0;
 }
 
-int sandboxDele(int boxid) {
+int SandboxDele(int boxid) {
   Log("[debug] box-", boxid, "start clean");
   ExecuteRedir("", "/dev/null", "/dev/null", "isolate",
                "--box-id=" + PadInt(boxid), "--cg", "--cleanup");

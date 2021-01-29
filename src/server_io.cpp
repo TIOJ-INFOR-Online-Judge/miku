@@ -100,11 +100,11 @@ inline Reply SendCmd(QueryType qu, const std::string& str,
   return rep;
 }
 
-void respondValidating(int sid) {
+void RespondValidating(int sid) {
   SendMsg(kRespondValidating, PadInt(sid), true);
 }
 
-int fetchSubmission(Submission& sub) {
+int FetchSubmission(Submission& sub) {
   Reply rep = SendCmd(kFetchSubmission, "");
   std::stringstream ss(rep.message);
   ss >> sub.submission_id;
@@ -155,7 +155,7 @@ int fetchSubmission(Submission& sub) {
   return 0;
 }
 
-int downloadTestdata(Submission& sub) {
+int DownloadTestdata(Submission& sub) {
   Reply rep = SendCmd(kFetchTestdataMeta, PadInt(sub.problem_id));
   if (rep.status) return -1;
   std::stringstream ss(rep.message);
@@ -185,7 +185,7 @@ int downloadTestdata(Submission& sub) {
   return 0;
 }
 
-int fetchProblem(Submission& sub) {
+int FetchProblem(Submission& sub) {
   std::string pid = PadInt(sub.problem_id);
   {  // Get submission code
     Reply rep = SendCmd(kFetchCode, PadInt(sub.submission_id));
@@ -203,7 +203,7 @@ int fetchProblem(Submission& sub) {
     rep.message.swap(sub.interlib);
   }
   // Download testdata (create dir if not exist)
-  if (downloadTestdata(sub) == -1) return -1;
+  if (DownloadTestdata(sub) == -1) return -1;
 
   // Get limits
   Reply rep = SendCmd(kFetchLimits, pid);
@@ -213,7 +213,7 @@ int fetchProblem(Submission& sub) {
   return 0;
 }
 
-int sendResult(Submission& sub, int verdict, bool done) {
+int SendResult(Submission& sub, int verdict, bool done) {
   std::string result;
   if (verdict == CE) {
     result = "CE";
@@ -235,7 +235,7 @@ int sendResult(Submission& sub, int verdict, bool done) {
   return 0;
 }
 
-int sendMessage(const Submission& sub, const std::string& message) {
+int SendMessage(const Submission& sub, const std::string& message) {
   SendMsg(kUpdateMessage, PadInt(sub.submission_id) + '\0' + message, true);
   return 0;
 }

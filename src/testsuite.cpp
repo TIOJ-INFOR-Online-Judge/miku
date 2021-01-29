@@ -21,25 +21,25 @@
 #include "server_io.h"
 #include "utils.h"
 
-int compile(const Submission& target, int boxid, int spBoxid);
-void eval(Submission& sub, int td, int boxid, int spBoxid);
-void getExitStatus(Submission& sub, int td);
+int Compile(const Submission& target, int boxid, int spBoxid);
+void Eval(Submission& sub, int td, int boxid, int spBoxid);
+void GetExitStatus(Submission& sub, int td);
 
 int MAXPARNUM = 1;
 int BOXOFFSET = 10;
 bool AGGUPDATE = false;
 
-int testsuite(Submission& sub) {
+int Testsuite(Submission& sub) {
   Execute("rm", "-f", "./testzone/*");
   const int testBoxid = BOXOFFSET + 0, spBoxid = BOXOFFSET + 1;
   auto DelSandboxes = [&]() {
-    sandboxDele(testBoxid);
-    sandboxDele(spBoxid);
+    SandboxDele(testBoxid);
+    SandboxDele(spBoxid);
   };
 
-  sandboxInit(testBoxid);
-  sandboxInit(spBoxid);
-  int status = compile(sub, testBoxid, spBoxid);
+  SandboxInit(testBoxid);
+  SandboxInit(spBoxid);
+  int status = Compile(sub, testBoxid, spBoxid);
   if (status != OK) {
     DelSandboxes();
     return status;
@@ -61,12 +61,12 @@ int testsuite(Submission& sub) {
         return ER;
       }
       int td = proc[cid];
-      eval(sub, td, BOXOFFSET + 10 + td, spBoxid);
+      Eval(sub, td, BOXOFFSET + 10 + td, spBoxid);
       if (AGGUPDATE) {
-        sendResult(sub, OK, false);
+        SendResult(sub, OK, false);
       }
       // cerr << "td" << td << " : " << sub.verdict[td] << endl;
-      sandboxDele(BOXOFFSET + 10 + td);
+      SandboxDele(BOXOFFSET + 10 + td);
       --procnum;
     }
 
@@ -101,12 +101,12 @@ int testsuite(Submission& sub) {
     }
     const int td = proc[cid];
     // sub.verdict[td] = eval(problem_id, td);
-    eval(sub, td, BOXOFFSET + 10 + td, spBoxid);
+    Eval(sub, td, BOXOFFSET + 10 + td, spBoxid);
     if (AGGUPDATE) {
-      sendResult(sub, OK, false);
+      SendResult(sub, OK, false);
     }
     // cerr << "td" << td << " : " << sub.verdict[td] << endl;
-    sandboxDele(BOXOFFSET + 10 + td);
+    SandboxDele(BOXOFFSET + 10 + td);
     --procnum;
   }
   // clear box-10
@@ -114,7 +114,7 @@ int testsuite(Submission& sub) {
   return OK;
 }
 
-void setExitStatus(Submission& sub, int td) {
+void SetExitStatus(Submission& sub, int td) {
   std::ifstream fin("./testzone/META" + PadInt(td));
   std::string line;
   std::map<std::string, std::string> META;
@@ -152,10 +152,10 @@ void setExitStatus(Submission& sub, int td) {
   }
 }
 
-void eval(Submission& sub, int td, int boxid, int spBoxid) {
+void Eval(Submission& sub, int td, int boxid, int spBoxid) {
   auto& nowtd = sub.tds[td];
   int problem_id = sub.problem_id;
-  setExitStatus(sub, td);
+  SetExitStatus(sub, td);
   if (nowtd.verdict != OK) {
     return;
   }
@@ -233,7 +233,7 @@ void eval(Submission& sub, int td, int boxid, int spBoxid) {
   nowtd.verdict = status;
 }
 
-int compile(const Submission& target, int boxid, int spBoxid) {
+int Compile(const Submission& target, int boxid, int spBoxid) {
   std::string boxdir = BoxPath(boxid);
 
   std::ofstream fout;
@@ -293,7 +293,7 @@ int compile(const Submission& target, int boxid, int spBoxid) {
   opt.meta = "./testzone/metacomp";
   opt.fsize_limit = 32768;
 
-  sandboxExec(boxid, opt, args);
+  SandboxExec(boxid, opt, args);
   std::string compiled_target;
   if (target.lang == "python2" || target.lang == "python3")
     compiled_target = "main.pyc";
@@ -321,7 +321,7 @@ int compile(const Submission& target, int boxid, int spBoxid) {
                        "from[\\S\\s]*?((\\n\\./main\\.c)|($))"),
             "$1[Error messages from headers removed]$2");
       }
-      sendMessage(target, cerr_msg);
+      SendMessage(target, cerr_msg);
     }
     return CE;
   }
@@ -337,7 +337,7 @@ int compile(const Submission& target, int boxid, int spBoxid) {
                                   "./sj.out",     "-O2", "-std=c++14"};
     opt.meta = "./testzone/metacompsj";
 
-    sandboxExec(spBoxid, opt, args);
+    SandboxExec(spBoxid, opt, args);
     if (access((spBoxdir + "sj.out").c_str(), F_OK) == -1) {
       return ER;
     }

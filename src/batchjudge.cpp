@@ -17,7 +17,7 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
   }
 
   // init box
-  sandboxInit(boxid);
+  SandboxInit(boxid);
   std::string boxpath = BoxPath(boxid);
   std::string tdinput = TdInput(pid, td);
   std::string boxinput = BoxInput(boxid);
@@ -50,11 +50,11 @@ int BatchJudge(int pid, int td, int boxid, int tl, int ml, int ol, int testee,
 
   // invoke box command
   if (lang == "python2") {
-    sandboxExec(boxid, opt, {"/usr/bin/env", "python2.7", target});
+    SandboxExec(boxid, opt, {"/usr/bin/env", "python2.7", target});
   } else if (lang == "python3") {
-    sandboxExec(boxid, opt, {"/usr/bin/env", "python3.7", target});
+    SandboxExec(boxid, opt, {"/usr/bin/env", "python3.7", target});
   } else {
-    sandboxExec(boxid, opt, {target});
+    SandboxExec(boxid, opt, {target});
   }
   return 0;
 }

@@ -29,11 +29,11 @@ class SandboxOptions {
         fsize_limit(0) {}
 };
 
-int sandboxInit(int boxid);
+int SandboxInit(int boxid);
 
-int sandboxExec(int boxid, const SandboxOptions &,
+int SandboxExec(int boxid, const SandboxOptions &,
                 const std::vector<std::string> &);
 
-int sandboxDele(int boxid);
+int SandboxDele(int boxid);
 
 #endif  // SANDBOX_H_
