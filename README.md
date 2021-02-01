@@ -2,7 +2,7 @@ miku
 ==
 
 ```bash
-$ git clone https://github.com/adrien1018/miku.git
+$ git clone https://github.com/TIOJ-INFOR-Online-Judge.git
 $ cd miku
 $ git submodule update --init
 ```
